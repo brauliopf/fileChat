@@ -16,19 +16,23 @@ const openAIApiKey = process.env.OPENAI_API_KEY
 const llm = new ChatOpenAI({ openAIApiKey })
 
 // A string holding the phrasing of the prompt
-const standaloneQuestionTemplate = 'Extract a standalone question from the following question: {question}. Standalone Question:'
+// Finish with a call-to-action: "standalone question:"
+const standaloneQuestionTemplate = 'Given a question, extract from it a standalone question. {question}. Standalone Question:'
 
 // A prompt created using PromptTemplate and the fromTemplate method
 const standaloneQuestionPrompt = PromptTemplate.fromTemplate(standaloneQuestionTemplate)
 
 // Take the standaloneQuestionPrompt and PIPE the model
+// This is first step in the pipelime/chain
 const standaloneQuestionChain = standaloneQuestionPrompt.pipe(llm)
 
 // Await the response when you INVOKE the chain. 
 // Remember to pass in a question.
 const response = await standaloneQuestionChain.invoke({
-    question: 'I feel hungry now... and tired. What is the capital of France?'
+    question: 'I feel hungry now... and tired. How many km are there in a marathon? I have never run a marathon before and my wife said I should try before next year.'
 })
+
+console.log(response)
 
 async function progressConversation() {
     const userInput = document.getElementById('user-input')

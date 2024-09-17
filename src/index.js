@@ -1,8 +1,8 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
+import { RunnablePassthrough, RunnableSequence } from "@langchain/core/runnables"
 import { retriever } from './utils/retriever.js';
-
-const openAIApiKey = process.env.OPENAI_API_KEY
+import { combineDocuments } from "./utils/combineDocuments.js";
 
 // block page reload after form submission
 // trigger progressConversation instead
@@ -11,6 +11,7 @@ document.addEventListener('submit', (e) => {
     progressConversation()
 })
 
+const openAIApiKey = process.env.OPENAI_API_KEY
 // ** Example of pipeline/chain: parse question + retrieve content + set up response **
 // This is a more elegant RAG (retrieval-augmented generation)
 const llm = new ChatOpenAI({ openAIApiKey })
@@ -18,21 +19,44 @@ const llm = new ChatOpenAI({ openAIApiKey })
 // A string holding the phrasing of the prompt
 // Finish with a call-to-action --"standalone question:"
 const standaloneQuestionTemplate = 'Given a question, extract from it a standalone question. {question}. Standalone Question:'
-
-// A prompt created using PromptTemplate and the fromTemplate method
 const standaloneQuestionPrompt = PromptTemplate.fromTemplate(standaloneQuestionTemplate)
 
-// Take the standaloneQuestionPrompt and PIPE the model
-// Pipeline: add the user input (passed with the invoke method) to the llm, then retrieve the response
-// *** Implemented without an output parser, making an assumption on the llm response structure ***
-const chain = standaloneQuestionPrompt.pipe(llm).pipe(x => x.content).pipe(retriever)
+const answerTemplate = `You are a helpful and enthusiastic support bot who can answer a given question about Scrimba based on the context provided. Try to find the answer in the context. If you really don't know the answer, say "I'm sorry, I don't know the answer to that." And direct the questioner to email help@scrimba.com. Don't try to make up an answer. Always speak as if you were chatting to a friend.
+context: {context}
+question: {question}
+answer:`
+const answerPrompt = PromptTemplate.fromTemplate(answerTemplate)
 
-// Get response when you INVOKE the chain. 
+const standaloneQuestionChain = standaloneQuestionPrompt
+    .pipe(llm)
+    .pipe(x => x.content) 
+    
+const retrieverChain = RunnableSequence.from([
+    prevResult => prevResult.standalone_question,
+    retriever,
+    combineDocuments
+])
+const answerChain = answerPrompt
+    .pipe(llm)
+    .pipe(x => x.content) 
+
+const chain = RunnableSequence.from([
+    {
+        standalone_question: standaloneQuestionChain,
+        original_input: new RunnablePassthrough()
+    },
+    {
+        context: retrieverChain,
+        question: ({ original_input }) => original_input.question
+    },
+    answerChain
+])
+
 const response = await chain.invoke({
     question: 'What are the technical requirements for running Scrimba? I only have a very old laptop which is not that powerful.'
 })
-console.log('THE END 1:', response)
-// * An object with a property "content" defined as a single question -the standalone question
+
+console.log('response', response)
 
 async function progressConversation() {
     const userInput = document.getElementById('user-input')
@@ -46,11 +70,14 @@ async function progressConversation() {
     chatbotConversation.appendChild(newHumanSpeechBubble)               // add to conversation   
     newHumanSpeechBubble.textContent = question                         // insert user input
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight    // scroll to bottom
+    const response = await chain.invoke({
+        question: question
+    })
 
     // add AI message
     const newAiSpeechBubble = document.createElement('div')             // create html element
     newAiSpeechBubble.classList.add('speech', 'speech-ai')              // css formatting
     chatbotConversation.appendChild(newAiSpeechBubble)                  // add to conversation
-    newAiSpeechBubble.textContent = result                              // insert llm response #todo: replace with actual response
+    newAiSpeechBubble.textContent = response                              // insert llm response #todo: replace with actual response
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight    // scroll to bottom
 }

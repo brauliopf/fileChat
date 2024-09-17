@@ -1,9 +1,8 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { createClient } from "@supabase/supabase-js";
-import { OpenAIEmbeddings } from "@langchain/openai";
-// npm install @langchain/community @supabase/supabase-js
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
+import { retriever } from './utils/retriever.js';
+
+const openAIApiKey = process.env.OPENAI_API_KEY
 
 // block page reload after form submission
 // trigger progressConversation instead
@@ -12,27 +11,28 @@ document.addEventListener('submit', (e) => {
     progressConversation()
 })
 
-const openAIApiKey = process.env.OPENAI_API_KEY
+// ** Example of pipeline/chain: parse question + retrieve content + set up response **
+// This is a more elegant RAG (retrieval-augmented generation)
 const llm = new ChatOpenAI({ openAIApiKey })
 
 // A string holding the phrasing of the prompt
-// Finish with a call-to-action: "standalone question:"
+// Finish with a call-to-action --"standalone question:"
 const standaloneQuestionTemplate = 'Given a question, extract from it a standalone question. {question}. Standalone Question:'
 
 // A prompt created using PromptTemplate and the fromTemplate method
 const standaloneQuestionPrompt = PromptTemplate.fromTemplate(standaloneQuestionTemplate)
 
 // Take the standaloneQuestionPrompt and PIPE the model
-// This is first step in the pipelime/chain
-const standaloneQuestionChain = standaloneQuestionPrompt.pipe(llm)
+// Pipeline: add the user input (passed with the invoke method) to the llm, then retrieve the response
+// *** Implemented without an output parser, making an assumption on the llm response structure ***
+const chain = standaloneQuestionPrompt.pipe(llm).pipe(x => x.content).pipe(retriever)
 
-// Await the response when you INVOKE the chain. 
-// Remember to pass in a question.
-const response = await standaloneQuestionChain.invoke({
-    question: 'I feel hungry now... and tired. How many km are there in a marathon? I have never run a marathon before and my wife said I should try before next year.'
+// Get response when you INVOKE the chain. 
+const response = await chain.invoke({
+    question: 'What are the technical requirements for running Scrimba? I only have a very old laptop which is not that powerful.'
 })
-
-console.log(response)
+console.log('THE END 1:', response)
+// * An object with a property "content" defined as a single question -the standalone question
 
 async function progressConversation() {
     const userInput = document.getElementById('user-input')

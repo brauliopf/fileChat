@@ -40,12 +40,12 @@ main {
 
 .chatbot-header {
     display: flex;
-    flex-direction: column;
+    flex-direction: line;
     gap: .6em;
 }
 
 .logo {
-    width:  160px;
+    width:  60px;
 }
 
 .chatbot-conversation-container {
@@ -124,5 +124,5 @@ button {
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     text-transform: uppercase;
-    margin: 0;
+    margin: auto;
 }

@@ -1,5 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
+// About combining runnables to build a pipeline - https://js.langchain.com/docs/how_to/sequence/
 import { RunnablePassthrough, RunnableSequence } from "@langchain/core/runnables"
 import { retriever } from './utils/retriever.js';
 import { combineDocuments } from "./utils/combineDocuments.js";

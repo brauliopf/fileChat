@@ -14,15 +14,25 @@ document.addEventListener('submit', (e) => {
 const openAIApiKey = process.env.OPENAI_API_KEY
 // ** Example of pipeline/chain: parse question + retrieve content + set up response **
 // This is a more elegant RAG (retrieval-augmented generation)
-const llm = new ChatOpenAI({ openAIApiKey })
+const llm = new ChatOpenAI(
+    {
+        openAIApiKey,
+        temperature: 0,
+        // model: 'gpt-3.5-turbo-16k', // Uncomment for larger context
+    }
+)
 
 // A string holding the phrasing of the prompt
 // Finish with a call-to-action --"standalone question:"
-const standaloneQuestionTemplate = 'Given a question, extract from it a standalone question. {question}. Standalone Question:'
+const standaloneQuestionTemplate = `Given a question and a conversation history (if any), extract from it a standalone question.
+Question: {question}
+Conversation History: {conv_history}.
+Standalone Question:`
 const standaloneQuestionPrompt = PromptTemplate.fromTemplate(standaloneQuestionTemplate)
 
-const answerTemplate = `You are a helpful and enthusiastic support bot who can answer a given question about Scrimba based on the context provided. Try to find the answer in the context. If you really don't know the answer, say "I'm sorry, I don't know the answer to that." And direct the questioner to email help@scrimba.com. Don't try to make up an answer. Always speak as if you were chatting to a friend.
+const answerTemplate = `You are a helpful and enthusiastic support bot who can answer a given question about Scrimba based on the context and the conversation history provided. Try to find the answer in the context or, if not, find it in the conversation history if possible. If you really don't know the answer, say "I'm sorry, I don't know the answer to that." And direct the questioner to email help@scrimba.com. Don't try to make up an answer. Always speak as if you were chatting to a friend.
 context: {context}
+conversation_history: {conv_history}
 question: {question}
 answer:`
 const answerPrompt = PromptTemplate.fromTemplate(answerTemplate)
@@ -47,23 +57,20 @@ const chain = RunnableSequence.from([
     },
     {
         context: retrieverChain,
-        question: ({ original_input }) => original_input.question
+        question: ({ original_input }) => original_input.question,
+        conv_history: ({ original_input }) => original_input.conv_history
     },
     answerChain
 ])
 
-const response = await chain.invoke({
-    question: 'What are the technical requirements for running Scrimba? I only have a very old laptop which is not that powerful.'
-})
-
-console.log('response', response)
+const convHistory = []
 
 async function progressConversation() {
     const userInput = document.getElementById('user-input')
     const chatbotConversation = document.getElementById('chatbot-conversation-container')
     const question = userInput.value
     userInput.value = ''
-
+    
     // add human message
     const newHumanSpeechBubble = document.createElement('div')          // create html element
     newHumanSpeechBubble.classList.add('speech', 'speech-human')        // css formatting
@@ -71,10 +78,15 @@ async function progressConversation() {
     newHumanSpeechBubble.textContent = question                         // insert user input
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight    // scroll to bottom
     const response = await chain.invoke({
-        question: question
+        question: question,
+        conv_history: convHistory
     })
 
-    // add AI message
+    // log question and response to conversation history
+    convHistory.push(`Human: ${question}`)
+    convHistory.push(`AI: ${response}`)
+
+    // add AI message to UI
     const newAiSpeechBubble = document.createElement('div')             // create html element
     newAiSpeechBubble.classList.add('speech', 'speech-ai')              // css formatting
     chatbotConversation.appendChild(newAiSpeechBubble)                  // add to conversation

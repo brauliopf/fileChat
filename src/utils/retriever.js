@@ -19,6 +19,6 @@ const vectorStore = await new SupabaseVectorStore(embeddings, {
 
 // Retrieve best matches (documents) from the vector store
 // Uses the stored procedure match_documents (from the Supabase docs)
-const retriever = vectorStore.asRetriever()
+const retriever = vectorStore.asRetriever(4) // 4 is the default number of documents to retrieve
 
 export { retriever }

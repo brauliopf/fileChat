@@ -1,7 +1,7 @@
-require('dotenv').config();
-const { createClient } = require("@supabase/supabase-js");
-const { OpenAIEmbeddings } = require("@langchain/openai");
-const { SupabaseVectorStore } = require("@langchain/community/vectorstores/supabase"); // npm install @langchain/community @supabase/supabase-js
+import { createClient } from "@supabase/supabase-js";
+import { OpenAIEmbeddings } from "@langchain/openai";
+// npm install @langchain/community @supabase/supabase-js
+import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 
 const openAIApiKey = process.env.OPENAI_API_KEY
 const embeddings = new OpenAIEmbeddings({ openAIApiKey })
@@ -22,3 +22,5 @@ const vectorStore = new SupabaseVectorStore(embeddings, {
 // Retrieve best matches (documents) from the vector store
 // Uses the stored procedure match_documents (from the Supabase docs)
 const retriever = vectorStore.asRetriever(4) // 4 is the default number of documents to retrieve
+
+export { retriever }

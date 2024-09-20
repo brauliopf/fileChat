@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 
-// BEGIN
-
+// ### AUX
+// pdf text extraction
 const fs = require('fs');
 const pdf = require('pdf-parse');
-
 async function extractTextFromPDF(pdfPath) {
   const dataBuffer = fs.readFileSync(pdfPath);
   try {
@@ -18,8 +17,7 @@ async function extractTextFromPDF(pdfPath) {
   }
 }
 
-// END
-
+// ### ROUTES
 router.get('/random', (req, res) => {
   res.sendFile(path.join(__dirname, '../views', 'random.html'));
 });
@@ -29,7 +27,5 @@ router.get('/loadfile', (req, res) => {
   .then(text => res.status(200).json(text))
   .catch(err => console.error(err));
 });
-
-// You can add other miscellaneous routes here
 
 module.exports = router;

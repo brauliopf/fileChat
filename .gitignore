@@ -1,7 +1,5 @@
 node_modules/
-reference/
-.env
-.DS_Store
+config/
 *.log
 dist/
 bundle.js

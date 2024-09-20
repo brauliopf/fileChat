@@ -3,10 +3,10 @@ const path = require('path');
 require('dotenv').config();
 
 module.exports = {
-    entry: '/src/client/static/js/webpack_index.js',
+    entry: '/src/public/js/webpack_index.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'src/client/static/js/dist'),
+        path: path.resolve(__dirname, 'src/public/js/dist'),
     },
     plugins: [
         new webpack.DefinePlugin({

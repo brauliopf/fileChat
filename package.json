@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --mode development;",
-    "start": "export NODE_ENV=development; nodemon ./src/app.js"
+    "build": "webpack --mode development; export NODE_ENV=development; nodemon ./src/app.js",
+    "dev": "export NODE_ENV=development; nodemon ./src/app.js"
   },
   "author": "",
   "license": "ISC",

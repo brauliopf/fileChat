@@ -3,6 +3,8 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 // npm install @langchain/community @supabase/supabase-js
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 
+console.log("process.env.SUPABASE_URL", process.env.SUPABASE_URL)
+
 const openAIApiKey = process.env.OPENAI_API_KEY
 const embeddings = new OpenAIEmbeddings({ openAIApiKey })
 const sbApiKey = process.env.SUPABASE_API_KEY

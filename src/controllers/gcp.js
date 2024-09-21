@@ -1,11 +1,11 @@
 // Must be connected to Google Cloud Platform
 // Authenticate to BigQuery: https://cloud.google.com/bigquery/docs/authentication#client-libs
-const {BigQuery} = require('@google-cloud/bigquery');
+import { BigQuery } from '@google-cloud/bigquery';
 
 // @desc    Test connection to GCP Public Dataset
 // @route   GET /bigquery/test
 // @access  Public
-const test = async (req, res, next) => {
+export const test = async (req, res, next) => {
 
     // The SQL query to run
     const sqlQuery = `
@@ -35,4 +35,3 @@ const test = async (req, res, next) => {
     if (output) { res.status(200).json({ output }); }
     else { res.status(404).json({ error: "Could not perform query" }) }
 }
-module.exports = { test };

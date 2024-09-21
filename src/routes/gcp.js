@@ -1,15 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const path = require('path');
-const gcpController = require('../controllers/gcp');
-
-// GCP Connect - END
+import { Router } from "express";
+const gcpRouter = Router({ mergeParams: true });
+import path from "path";
+import { gcpController } from "../controllers/index.js"
 
 // ROUTES
-router.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../views', 'random2.html'));
+gcpRouter.get('/', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './src/views', 'random2.html'));
 });
 
-router.get('/test', gcpController.test);
+gcpRouter.get('/test', gcpController.test);
 
-module.exports = router;
+export { gcpRouter };

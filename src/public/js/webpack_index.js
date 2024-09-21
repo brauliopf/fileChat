@@ -71,7 +71,7 @@ async function progressConversation() {
     const chatbotConversation = document.getElementById('chatbot-conversation-container')
     const question = userInput.value
     userInput.value = ''
-    
+
     // add human message
     const newHumanSpeechBubble = document.createElement('div')          // create html element
     newHumanSpeechBubble.classList.add('speech', 'speech-human')        // css formatting

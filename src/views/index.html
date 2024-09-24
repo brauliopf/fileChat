@@ -16,7 +16,7 @@
                         <div class="button_text">
                             <span class="sequence">1)</span>
                             <span class="cta">Upload the content you want to talk about</span>
-                            <button>File Upload</button>
+                            <input type="file" id="file-upload" accept=".txt">
                         </div>
                     </div>
                     <div class="embeddings">
@@ -28,7 +28,7 @@
                             <span>Chunk Size: <input type="text" id="chunk-size" value="800"></span>
                             <span>Chunk Overlap: <input type="text" id="chunk-size" value="100"></span>
                         </div>
-                        <div class="button_text"><button id="embeddings">Generate</button></div>
+                        <div class="button_text"><button id="generate">Generate</button></div>
                     </div>
                     <hr style="width:80%">
                     <div class="upload_status">
@@ -37,8 +37,7 @@
                             <span class="cta">Status of FileChat Bot</span>
                         </div>
                         <div class="additional_data">
-                            <span>Status: waiting for content</span>
-                            <span>Number of chunks: </span>
+                            <span>Status: <span id="process_status">waiting for content</span></span>
                         </div>
                     </div>
                 </div>
@@ -62,6 +61,5 @@
             </section>
         </main>
         <script src="/js/dist/bundle.js" type="module"></script>
-        <script src="/js/index.js" type="module"></script>
     </body>
 </html>

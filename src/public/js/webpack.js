@@ -5,6 +5,11 @@ import { RunnablePassthrough, RunnableSequence } from "@langchain/core/runnables
 import { retriever } from './retriever.js';
 import { combineDocuments } from "./combineDocuments.js";
 
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
+import { createClient } from "@supabase/supabase-js";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
+
 // block page reload after form submission
 // trigger progressConversation instead
 document.addEventListener('submit', (e) => {
@@ -94,3 +99,63 @@ async function progressConversation() {
     newAiSpeechBubble.textContent = response                              // insert llm response #todo: replace with actual response
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight    // scroll to bottom
 }
+
+// 
+// 
+// Upload File
+// Split the text into chunks
+async function splitText(text){
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 800,
+      chunkOverlap: 100,
+      separators: ['\n\n', '\n', ' ', ''], // default setting --in decreasng priority order
+    });
+    const chunks = await splitter.createDocuments([text]);
+    return chunks;
+  }
+
+// Add an event trigger to the upload button (#embeddings)
+document.getElementById("generate").addEventListener("click", async function () {
+    console.log("Button Clicked");
+    
+    // get the file from the input field
+    var file = document.getElementById("file-upload").files[0];
+    
+    // get string from file
+    let contents
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            contents = e.target.result;
+            console.log(contents); // This will log the file contents
+     
+            let output
+            // You can process the text content here
+            // split text in chunks
+            output = await splitText(contents);
+            console.log(output, typeof output)
+
+            const openAIApiKey = process.env.OPENAI_API_KEY
+            try {
+            // Get Supabase Client. Supabase/LangChain Docs: https://supabase.com/docs/guides/ai/langchain
+            const sbApiKey = process.env.SUPABASE_API_KEY
+            const sbUrl = process.env.SUPABASE_URL
+            const sbClient = createClient(sbUrl, sbApiKey);
+            // Store chunks with embeddings
+            await SupabaseVectorStore.fromDocuments(
+                output,
+                new OpenAIEmbeddings({ openAIApiKey }),
+                {
+                client: sbClient,
+                tableName: 'documents',
+                }
+            )
+            document.getElementById("process_status").innerHTML = "Embeddings generated successfully!";
+            } catch(err) {
+                console.log(err)
+            }
+        };
+        reader.readAsText(file);
+    }
+
+});

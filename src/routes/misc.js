@@ -6,8 +6,4 @@ miscRouter.get('/', (req, res) => {
   res.sendFile(path.join(path.resolve(), './src/views', 'index.html'));
 });
 
-miscRouter.get('/random', (req, res) => {
-  res.sendFile(path.join(path.resolve(), './src/views', 'random.html'));
-});
-
 export { miscRouter };

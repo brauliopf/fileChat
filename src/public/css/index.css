@@ -14,14 +14,15 @@ html, body {
 }
 
 main {    
-    background-color: slategrey;
-    /* background-image: url('images/scrimba-bg.jpeg'); */
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-color: lightblue;
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.main-col {
+    margin: auto 10px ;
 }
 
 /* chatbot elements */
@@ -53,14 +54,8 @@ main {
     overflow-y: scroll;
     margin: 1em 0;
 }
-
-/* stop ugly scroll bar on some browsers */
-.chatbot-conversation-container::-webkit-scrollbar {
-    display: none;
-}
-
-.chatbot-conversation-container::-moz-scrollbar {
-    display: none;
+.chatbot-input-container {
+    display: flex;
 }
 
 .speech {
@@ -92,14 +87,15 @@ main {
     display: flex;
 }
 
-input[type="text"], button {
+
+#form input[type="text"], button {
     background-color: transparent;
     border: 1px solid #586e88;
     border-radius: var(--border-rad-lg);
     padding: 1em;
 }
 
-input[type="text"] {
+#form input[type="text"] {
     color: var(--light-text);
     width: 100%;
     border-right: 0; 
@@ -107,7 +103,7 @@ input[type="text"] {
     border-bottom-right-radius: 0;
 }
 
-button {
+#form button {
     border-left: 0; 
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -118,11 +114,51 @@ button {
     display: block;
 }
 
-/* text */
 .sub-heading {
     color: #999999;
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     text-transform: uppercase;
     margin: auto;
+}
+
+/* Config Elements */
+.button_text {
+    display: inline;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-config {
+    background-color: #fefefe;
+    width: 360px;
+    min-height: 380px;
+    border-radius: var(--border-rad-lg);
+    padding: 1em;  
+}
+
+.chatbot-config > div {
+    margin: 15px 0
+}
+
+.chatbot-config .button_text {
+    display: inline;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.button_text button {
+    background-color:bisque;
+}
+
+.chatbot-config .additional_data {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.chatbot-config .additional_data input{
+    width: 40px;
 }

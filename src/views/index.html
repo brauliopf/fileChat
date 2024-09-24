@@ -9,7 +9,41 @@
 
     <body>
         <main>
-            <section class="chatbot-container">
+            <section class="main-col config-container">
+                <div class="chatbot-config">
+                    <h1>Content Upload</h1>
+                    <div class="upload">
+                        <div class="button_text">
+                            <span class="sequence">1)</span>
+                            <span class="cta">Upload the content you want to talk about</span>
+                            <button>File Upload</button>
+                        </div>
+                    </div>
+                    <div class="embeddings">
+                        <div class="button_text">
+                            <span class="sequence">2)</span>
+                            <span class="cta">Generate embeddings</span>
+                        </div>
+                        <div class="additional_data">
+                            <span>Chunk Size: <input type="text" id="chunk-size" value="800"></span>
+                            <span>Chunk Overlap: <input type="text" id="chunk-size" value="100"></span>
+                        </div>
+                        <div class="button_text"><button id="embeddings">Generate</button></div>
+                    </div>
+                    <hr style="width:80%">
+                    <div class="upload_status">
+                        <div class="status">
+                            <span class="sequence">3)</span>
+                            <span class="cta">Status of FileChat Bot</span>
+                        </div>
+                        <div class="additional_data">
+                            <span>Status: waiting for content</span>
+                            <span>Number of chunks: </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="main-col chatbot-container">
                 <div class="chatbot-header">
                     <img src="/assets/chat.svg" class="logo">
                     <p class="sub-heading">Chat with your Knowledge Bank ;)</p>

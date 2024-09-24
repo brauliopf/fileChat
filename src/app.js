@@ -6,20 +6,15 @@ dotenv.config({ path: "/config/.env" });
 
 const PORT = process.env.PORT || 3000;
 
+// # ROUTES
+
 // Serve static files
 server.use(express.static(path.join(path.resolve(), './src/public')));
 
-// ### ROUTES
-// *** Option 1: Serve the index.html file directly *** 
-server.get('/', (req, res) => {
-  res.sendFile(path.join(path.resolve(), './src/views', 'index.html'));
-});
-// *** Option 2: Use a separate route file, that might use a controller ***
-
-// General
+// General routes
 import * as routes from "./routes/index.js";
 server.use('/', routes.miscRouter);
-server.use('/bigquery', routes.gcpRouter);
+server.use('/bigquery', routes.gbqRouter);
 server.use('/agent', routes.agentRouter);
 
 // Run the server

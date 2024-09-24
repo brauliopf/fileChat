@@ -2,7 +2,10 @@ import { Router } from "express";
 const miscRouter = Router({ mergeParams: true });
 import path from 'path';
 
-// ### ROUTES
+miscRouter.get('/', (req, res) => {
+  res.sendFile(path.join(path.resolve(), './src/views', 'index.html'));
+});
+
 miscRouter.get('/random', (req, res) => {
   res.sendFile(path.join(path.resolve(), './src/views', 'random.html'));
 });

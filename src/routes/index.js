@@ -3,4 +3,4 @@
 
 export { agentRouter } from "../routes/agent.js"
 export { miscRouter } from "../routes/misc.js"
-export { gcpRouter } from "../routes/gcp.js"
+export { gbqRouter } from "../routes/gbq.js"

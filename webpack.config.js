@@ -6,7 +6,7 @@ dotenv.config({ path: path.join(path.resolve(), "./config/.env") });
 console.log(path.join(path.resolve(), "./config/.env"))
 
 export default {
-  entry: '/src/public/js/webpack_index.js',
+  entry: '/src/public/js/webpack.js',
   output: {
     filename: 'bundle.js',
     path: path.join(path.resolve(), 'src/public/js/dist'),

@@ -14,8 +14,6 @@ server.use(express.static(path.join(path.resolve(), './src/public')));
 // General routes
 import * as routes from "./routes/index.js";
 server.use('/', routes.miscRouter);
-server.use('/bigquery', routes.gbqRouter);
-server.use('/agent', routes.agentRouter);
 
 // Run the server
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

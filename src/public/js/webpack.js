@@ -1,9 +1,9 @@
 import { ChatOpenAI } from "@langchain/openai";
-import { PromptTemplate } from "@langchain/core/prompts";
+
 // About combining runnables to build a pipeline - https://js.langchain.com/docs/how_to/sequence/
 import { RunnablePassthrough, RunnableSequence } from "@langchain/core/runnables"
 import { retriever } from './retriever.js';
-import { combineDocuments } from "./combineDocuments.js";
+import { combineDocuments, standaloneQuestionPrompt, answerPrompt} from "./aux.js";
 
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { createClient } from "@supabase/supabase-js";
@@ -18,30 +18,13 @@ document.addEventListener('submit', (e) => {
 })
 
 const openAIApiKey = process.env.OPENAI_API_KEY
-// ** Example of pipeline/chain: parse question + retrieve content + set up response **
-// This is a more elegant RAG (retrieval-augmented generation)
 const llm = new ChatOpenAI(
     {
         openAIApiKey,
-        temperature: 0,
+        temperature: 0, // 0 is deterministic (no randomness --avoid hallucinations when talking about specific content)
         // model: 'gpt-3.5-turbo-16k', // Uncomment for larger context
     }
 )
-
-// A string holding the phrasing of the prompt
-// Finish with a call-to-action --"standalone question:"
-const standaloneQuestionTemplate = `Given a question and a conversation history (if any), extract from it a standalone question.
-Question: {question}
-Conversation History: {conv_history}.
-Standalone Question:`
-const standaloneQuestionPrompt = PromptTemplate.fromTemplate(standaloneQuestionTemplate)
-
-const answerTemplate = `You are a helpful and enthusiastic support bot who can answer a given question about Scrimba based on the context and the conversation history provided. Try to find the answer in the context or, if not, find it in the conversation history if possible. If you really don't know the answer, say "I'm sorry, I don't know the answer to that." And direct the questioner to email help@scrimba.com. Don't try to make up an answer. Always speak as if you were chatting to a friend.
-context: {context}
-conversation_history: {conv_history}
-question: {question}
-answer:`
-const answerPrompt = PromptTemplate.fromTemplate(answerTemplate)
 
 const standaloneQuestionChain = standaloneQuestionPrompt
     .pipe(llm)
